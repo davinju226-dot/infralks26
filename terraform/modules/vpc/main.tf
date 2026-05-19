@@ -10,7 +10,7 @@ terraform {
 }
 
 resource "aws_vpc" "this" {
-  cidr_block           = var.vpc_cidr
+  cidr_block           = ["10.0.0.0/16"]
   enable_dns_hostnames = true
   enable_dns_support   = true
   tags = { Name = var.vpc_name }
@@ -30,6 +30,15 @@ resource "aws_subnet" "public" {
   tags = { Name = "lks-public-subnet-${count.index + 1}" }
 }
 
+resource "aws_subnet" "public" {
+  count                   = length(var.public_subnet_cidrs)
+  vpc_id                  = aws_vpc.this.id
+  cidr_block              = var.public_subnet_cidrs[count.index]
+  availability_zone       = var.availability_zones[count.index]
+  map_public_ip_on_launch = true
+  tags = { Name = "lks-public-subnet-${count.index + 2}" }
+}
+
 resource "aws_subnet" "private" {
   count             = length(var.private_subnet_cidrs)
   vpc_id            = aws_vpc.this.id
@@ -38,12 +47,29 @@ resource "aws_subnet" "private" {
   tags = { Name = "lks-private-subnet-${count.index + 1}" }
 }
 
+resource "aws_subnet" "private" {
+  count             = length(var.private_subnet_cidrs)
+  vpc_id            = aws_vpc.this.id
+  cidr_block        = var.private_subnet_cidrs[count.index]
+  availability_zone = var.availability_zones[count.index]
+  tags = { Name = "lks-private-subnet-${count.index + 2}" }
+}
+
+
 resource "aws_subnet" "isolated" {
   count             = length(var.isolated_subnet_cidrs)
   vpc_id            = aws_vpc.this.id
   cidr_block        = var.isolated_subnet_cidrs[count.index]
   availability_zone = var.availability_zones[count.index]
   tags = { Name = "lks-isolated-subnet-${count.index + 1}" }
+}
+
+resource "aws_subnet" "isolated" {
+  count             = length(var.isolated_subnet_cidrs)
+  vpc_id            = aws_vpc.this.id
+  cidr_block        = var.isolated_subnet_cidrs[count.index]
+  availability_zone = var.availability_zones[count.index]
+  tags = { Name = "lks-isolated-subnet-${count.index + 2}" }
 }
 
 resource "aws_eip" "nat" {
