@@ -68,7 +68,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "assets" {
 
   rule {
     id     = "expire-old-assets"
-    status = "Disabled"
+    status = "Enabled"
 
     transition {
       days          = 30
