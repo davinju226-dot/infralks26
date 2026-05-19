@@ -54,7 +54,7 @@ resource "aws_db_instance" "this" {
   parameter_group_name    = aws_db_parameter_group.this.name
   vpc_security_group_ids  = [var.security_group_id]
   publicly_accessible     = false
-  skip_final_snapshot     = true
+  skip_final_snapshot     = true 
   backup_retention_period = 7
 
   tags = { Name = "lks-rds-postgres" }
@@ -116,7 +116,7 @@ resource "aws_sqs_queue" "this" {
 
 resource "aws_ssm_parameter" "db_host" {
   name      = "/lks/app/db_host"
-  type      = "String"
+  type      = "SecureString"
   value     = aws_db_instance.this.address
   overwrite = true
   tags      = { Name = "lks-ssm-db-host" }
